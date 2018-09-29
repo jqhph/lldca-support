@@ -1,0 +1,40 @@
+{
+  "name": "lldca/swoft-support",
+  "description": "swoft support",
+  "keywords": ["swoft support"],
+  "license": "MIT",
+  "support": {
+    "issues": "https://github.com/jqhph/swoft support/issues",
+    "source": "https://github.com/jqhph/swoft support"
+  },
+  "homepage": "http://119.29.34.145",
+  "authors": [
+    {
+      "name": "Jqh",
+      "email": "841324345@qq.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0"
+  },
+  "replace": {
+
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.1"
+  },
+  "autoload": {
+    "files": [
+      "src/Support/helpers.php"
+    ],
+    "psr-4": {
+      "Swoft\\": "src"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  },
+  "minimum-stability": "dev"
+}
