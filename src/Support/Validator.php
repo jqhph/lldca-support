@@ -67,7 +67,7 @@ class Validator
         'expire'      => ':attr not within :rule',
         'allowIp'     => 'access IP is not allowed',
         'denyIp'      => 'access IP denied',
-        'confirm'     => ':attr out of accord with :2',
+        'confirm'     => ':attr out of accord with :rule',
         'different'   => ':attr cannot be same with :2',
         'egt'         => ':attr must greater than or equal :rule',
         'gt'          => ':attr must greater than :rule',
@@ -395,7 +395,7 @@ class Validator
                 list($type, $rule, $info) = $this->getValidateType($key, $rule);
 
                 // 如果不是required 有数据才会行验证
-                if (0 === strpos($info, 'required') || (!is_null($value) && '' !== $value)) {
+                if (0 === strpos($info, 'required') || 0 === strpos($info, 'confirm') || (!is_null($value) && '' !== $value)) {
                     // 验证类型
                     $callback = isset(self::$type[$type]) ? self::$type[$type] : [$this, $type];
                     // 验证数据
@@ -843,8 +843,7 @@ class Validator
      */
     protected function method($value, $rule)
     {
-        $method = Request::instance()->method();
-        return strtoupper($rule) == $method;
+        return strtoupper($rule) == strtoupper(request()->getMethod());
     }
 
     /**
@@ -1113,7 +1112,8 @@ class Validator
         if (!is_numeric($end)) {
             $end = strtotime($end);
         }
-        return $_SERVER['REQUEST_TIME'] >= $start && $_SERVER['REQUEST_TIME'] <= $end;
+        $time = request()->getServerParams()['request_time'] ?? '';
+        return $time >= $start && $time <= $end;
     }
 
     /**
@@ -1125,7 +1125,9 @@ class Validator
      */
     protected function allowIp($value, $rule)
     {
-        return in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
+        $ip = request()->getServerParams()['remote_addr'] ?? '';
+
+        return in_array($ip, is_array($rule) ? $rule : explode(',', $rule));
     }
 
     /**
@@ -1137,7 +1139,9 @@ class Validator
      */
     protected function denyIp($value, $rule)
     {
-        return !in_array($_SERVER['REMOTE_ADDR'], is_array($rule) ? $rule : explode(',', $rule));
+        $ip = request()->getServerParams()['remote_addr'] ?? '';
+
+        return !in_array($ip, is_array($rule) ? $rule : explode(',', $rule));
     }
 
     /**
@@ -1239,6 +1243,8 @@ class Validator
 
         if (is_string($msg) && 0 === strpos($msg, '{%')) {
             $msg = $this->translate(substr($msg, 2, -1));
+        } else {
+            $msg = $this->translate($msg);
         }
 
         if (is_string($msg) && is_scalar($rule) && false !== strpos($msg, ':')) {

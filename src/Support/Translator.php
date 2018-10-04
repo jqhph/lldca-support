@@ -89,19 +89,6 @@ class Translator
     }
 
     /**
-     * 动态设置语言包
-     *
-     * @param string $lang
-     * @return $this
-     */
-    public function setLang(string $lang)
-    {
-        $this->defaultLanguage = $lang;
-
-        return $this;
-    }
-
-    /**
      * 获取当前语言包路径
      *
      * @return string
@@ -144,7 +131,7 @@ class Translator
      * @param string $locale
      * @return mixed
      */
-    public function translate($content, string $type = '', array $params = [], string $locale = null): string
+    public function translate($content, string $type = '', array $params = [], string $locale = null)
     {
         $realKey = $this->getRealCategory($type, $locale);
 
