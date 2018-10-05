@@ -8,6 +8,11 @@ class Assets
     const SYMBOL = '@';
 
     /**
+     * @var bool
+     */
+    protected static $init = false;
+
+    /**
      * 别名配置
      *
      * @var array
@@ -32,10 +37,10 @@ class Assets
      * 设置别名
      *
      * @param string|array $name
-     * @param string $dir
+     * @param string $path
      * @throws \Exception
      */
-    public static function setAlias($name, string $dir = null)
+    public static function setAlias($name, string $path = null)
     {
         if (is_array($name)) {
             foreach ($name as $k => &$v) {
@@ -46,7 +51,12 @@ class Assets
         if (static::exist($name)) {
             throw new \Exception("资源路径别名[$name]已存在,请勿重复设置");
         }
-        self::$alias[$name] = $dir;
+        if (!is_valid_url($path)) {
+            $server = rtrim(config('assets.resource-server'), '/');
+            $path = $server ? ($server .'/'. trim($path, '/')) : $path;
+        }
+
+        self::$alias[$name] = $path;
     }
 
     /**
@@ -126,9 +136,10 @@ class Assets
      */
     protected static function getAlias()
     {
-        if (static::$alias) {
+        if (static::$init) {
             return static::$alias;
         }
+        static::$init = true;
 
         $server = rtrim(config('assets.resource-server'), '/');
 
@@ -141,7 +152,7 @@ class Assets
             $path = $server ? ($server . (strpos($path, '/') === 0 ? $path : "/$path")) : Url::to($path);
         }
 
-        return static::$alias = array_merge($paths, self::$alias);
+        return static::$alias = array_merge($paths, static::$alias);
     }
 
 }
