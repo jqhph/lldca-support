@@ -595,6 +595,28 @@ class Arr
     }
 
     /**
+     * 合并新的数组到旧的数组
+     *
+     * @param  array $content
+     * @param  array $new
+     * @return array
+     */
+    public static function merge(array $content, array $new, $recurrence = false)
+    {
+        foreach ($new as $k => &$v) {
+            if ($recurrence) {
+                if (isset($content[$k]) && is_array($content[$k]) && is_array($v)) {
+                    $content[$k] = static::merge($content[$k], $v, true);
+                    continue;
+                }
+            }
+
+            $content[$k] = $v;
+        }
+        return $content;
+    }
+
+    /**
      * Filter the array using the given callback.
      *
      * @param  array  $array

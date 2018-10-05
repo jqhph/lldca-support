@@ -13,6 +13,11 @@ class HttpInput
     protected $request;
 
     /**
+     * @var array
+     */
+    protected $all;
+
+    /**
      * 所有请求参数
      *
      * @var array
@@ -50,7 +55,12 @@ class HttpInput
      */
     public function all()
     {
-        return array_merge($this->params['query'], $this->params['post'], (array)$this->request->file());
+        if ($this->all) {
+            return $this->all;
+        }
+
+        return $this->all =
+            array_merge($this->params['query'], Arr::merge($this->params['post'], (array)$this->request->file(), true));
     }
 
     /**
