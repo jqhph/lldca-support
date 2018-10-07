@@ -667,7 +667,7 @@ class Validator
                 $result = $value instanceof UploadedFile && in_array($this->getImageType(array_get($value->toArray(), 'tmp_file')), [1, 2, 3, 6]);
                 break;
             case 'token':
-                $result = $this->token($value, '__token__', $data);
+                $result = $this->token($value, '_token', $data);
                 break;
             default:
                 if (isset(self::$type[$rule])) {
@@ -1173,21 +1173,26 @@ class Validator
      */
     protected function token($value, $rule, $data)
     {
-        $session = session();
-        $rule = !empty($rule) ? $rule : '__token__';
-        if (!isset($data[$rule]) || !$session->has($rule)) {
+        $session = SessionHelper::wrap();
+        if (!$session) {
+            // 没有开启session功能
+            return false;
+        }
+        $token = $session->token();
+        $rule = !empty($rule) ? $rule : '_token';
+        if (!isset($data[$rule]) || !$token) {
             // 令牌数据无效
             return false;
         }
 
         // 令牌验证
-        if (isset($data[$rule]) && $session->get($rule) === $data[$rule]) {
+        if (isset($data[$rule]) && $token === $data[$rule]) {
             // 防止重复提交
-            $session->remove($rule); // 验证完成销毁session
+            $session->regenerateToken(); // 验证完成销毁session
             return true;
         }
         // 开启TOKEN重置
-        $session->remove($rule);
+        $session->regenerateToken();
         return false;
     }
 
