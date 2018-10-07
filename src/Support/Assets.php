@@ -51,7 +51,7 @@ class Assets
         if (static::exist($name)) {
             throw new \Exception("资源路径别名[$name]已存在,请勿重复设置");
         }
-        if (!is_valid_url($path)) {
+        if (!is_valid_url($path) && strpos($path, '//') !== 0) {
             $server = rtrim(config('assets.resource-server'), '/');
             $path = $server ? ($server .'/'. trim($path, '/')) : $path;
         }
@@ -80,9 +80,6 @@ class Assets
     {
         $path = static::alias($path);
 
-        if (strpos($path, '.css') === false) {
-            $path .= '.css';
-        }
         if (strpos($path, '.?') === false) {
             $path .= '?v='.config('assets.css-version');
         }
@@ -100,9 +97,6 @@ class Assets
     {
         $path = static::alias($path);
 
-        if (strpos($path, '.js') === false) {
-            $path .= '.js';
-        }
         if (strpos($path, '.?') === false) {
             $path .= '?v='.config('assets.js-version');
         }
