@@ -77,7 +77,6 @@ class Validator
         'unique'      => ':attr has exists',
         'regex'       => ':attr not conform to the rules',
         'method'      => 'invalid Request method',
-        'token'       => 'invalid token',
         'fileSize'    => 'filesize not match',
         'fileExt'     => 'extensions to upload is not allowed',
         'fileMime'    => 'mimetype to upload is not allowed',
@@ -666,9 +665,6 @@ class Validator
             case 'image':
                 $result = $value instanceof UploadedFile && in_array($this->getImageType(array_get($value->toArray(), 'tmp_file')), [1, 2, 3, 6]);
                 break;
-            case 'token':
-                $result = $this->token($value, '_token', $data);
-                break;
             default:
                 if (isset(self::$type[$rule])) {
                     // 注册的验证规则
@@ -1161,39 +1157,6 @@ class Validator
             $rule = '/^' . $rule . '$/';
         }
         return is_scalar($value) && 1 === preg_match($rule, (string) $value);
-    }
-
-    /**
-     * 验证表单令牌
-     * @access protected
-     * @param mixed     $value  字段值
-     * @param mixed     $rule  验证规则
-     * @param array     $data  数据
-     * @return bool
-     */
-    protected function token($value, $rule, $data)
-    {
-        $session = SessionHelper::wrap();
-        if (!$session) {
-            // 没有开启session功能
-            return false;
-        }
-        $token = $session->token();
-        $rule = !empty($rule) ? $rule : '_token';
-        if (!isset($data[$rule]) || !$token) {
-            // 令牌数据无效
-            return false;
-        }
-
-        // 令牌验证
-        if (isset($data[$rule]) && $token === $data[$rule]) {
-            // 防止重复提交
-            $session->regenerateToken(); // 验证完成销毁session
-            return true;
-        }
-        // 开启TOKEN重置
-        $session->regenerateToken();
-        return false;
     }
 
     /**
