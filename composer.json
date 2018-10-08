@@ -15,7 +15,9 @@
     }
   ],
   "require": {
-    "php": ">=7.0"
+    "php": ">=7.0",
+    "symfony/debug": "^4.1",
+    "symfony/var-dumper": "^4.1"
   },
   "replace": {
 
