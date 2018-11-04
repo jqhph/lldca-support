@@ -31,7 +31,7 @@ class HttpInput
         $this->params['query'] = $this->request->query();
 
         $json = $this->request->json();
-        $this->params['post'] = $json ? array_merge($this->request->post(), $json) : $this->request->post();
+        $this->params['post'] = array_merge($this->request->post(), $json ?: []);
     }
 
     /**
