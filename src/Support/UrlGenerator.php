@@ -96,7 +96,7 @@ class UrlGenerator
     {
         $referrer = $this->request->getHeader('referer')[0] ?? '';
 
-        $url = $referrer ? $this->to($referrer) : $this->getPreviousUrlFromSession();
+        $url = $referrer ? $this->to($referrer) : null;
 
         if ($url) {
             return $url;
@@ -116,22 +116,6 @@ class UrlGenerator
             return;
         }
         $session->setPreviousUrl($url);
-    }
-
-    /**
-     * @return null|string
-     */
-    protected function getPreviousUrlFromSession()
-    {
-        if (!$session = static::getSession()) {
-            return null;
-        }
-
-        $url = $session->previousUrl();
-        if ($url) {
-            $session->setPreviousUrl('');
-        }
-        return $url;
     }
 
     /**
