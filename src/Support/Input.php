@@ -18,6 +18,23 @@ class Input
     }
 
     /**
+     * 获取HttpInput单例
+     *
+     * @return HttpInput
+     */
+    public static function make()
+    {
+        if ($input = RequestContext::getContextDataByKey('__httpinput__')) {
+            return $input;
+        }
+        $input = static::create();
+
+        RequestContext::setContextDataByKey('__httpinput__', $input);
+
+        return $input;
+    }
+
+    /**
      * 判断字段是否存在
      *
      * @param string $key
@@ -25,7 +42,7 @@ class Input
      */
     public static function has(string $key)
     {
-        return static::create()->has($key);
+        return static::make()->has($key);
     }
 
     /**
@@ -35,7 +52,7 @@ class Input
      */
     public static function all()
     {
-        return static::create()->all();
+        return static::make()->all();
     }
 
     /**
@@ -47,7 +64,7 @@ class Input
      */
     public static function request(string $key = null, $def = null)
     {
-        return static::create()->request($key, $def);
+        return static::make()->request($key, $def);
     }
 
     /**
@@ -59,7 +76,7 @@ class Input
      */
     public static function file(string $key = null, $default = null)
     {
-        return static::create()->file($key, $default);
+        return static::make()->file($key, $default);
     }
 
     /**
@@ -71,7 +88,7 @@ class Input
      */
     public static function get(string $key = null, $def = null)
     {
-        return static::create()->get($key, $def);
+        return static::make()->get($key, $def);
     }
 
     /**
@@ -83,6 +100,6 @@ class Input
      */
     public static function post(string $key = null, $def = null)
     {
-        return static::create()->post($key, $def);
+        return static::make()->post($key, $def);
     }
 }

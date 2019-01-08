@@ -39,7 +39,7 @@ class Filesystem
     {
         if ($this->isFile($path)) {
             return $lock ? $this->sharedGet($path) :
-                (\Swoft::isCoContext() ? Coroutine::readFile($path) : file_get_contents($path));
+                (\Swoft\App::isCoContext() ? Coroutine::readFile($path) : file_get_contents($path));
         }
 
         return false;
@@ -125,7 +125,7 @@ class Filesystem
             throw new InvalidFileException('Permission denied for ' . $path);
         }
 
-        if (\Swoft::isCoContext()) {
+        if (\Swoft\App::isCoContext()) {
             return Coroutine::writeFile($path, $contents, $lock ? LOCK_EX : 0);
         }
         return file_put_contents($path, $contents, $lock ? LOCK_EX : 0);
@@ -222,7 +222,7 @@ class Filesystem
         if ($this->checkCreateFile($path) === false) {
             throw new InvalidFileException('Permission denied for ' . $path);
         }
-        if (\Swoft::isCoContext()) {
+        if (\Swoft\App::isCoContext()) {
             return Coroutine::writeFile($path, $data, FILE_APPEND);
         }
 

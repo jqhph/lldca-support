@@ -937,7 +937,7 @@ if (! function_exists('blade')) {
      */
     function blade(string $view, array $data = [], $mergeData = [])
     {
-        return \Swoft::getBean('blade.view')->make($view, $data, $mergeData);
+        return \bean('blade.view')->make($view, $data, $mergeData);
     }
 }
 
@@ -952,7 +952,7 @@ if (! function_exists('blade_factory')) {
      */
     function blade_factory()
     {
-        return \Swoft::getBean('blade.view');
+        return \bean('blade.view');
     }
 }
 
