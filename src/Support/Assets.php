@@ -113,7 +113,7 @@ class Assets
     protected static function parsePath(string $path, array &$config)
     {
         if (strpos($path, self::SYMBOL) !== 0) {
-            return $path;
+            return static::getCompleteUrl($path);
         }
         $path = explode('/', ltrim($path, self::SYMBOL));
 
@@ -121,6 +121,23 @@ class Assets
             $path[0] = $config[$path[0]];
         }
         return join('/', $path);
+    }
+
+    /**
+     * 获取完整链接
+     *
+     * @param null|string $path
+     * @return null|string
+     */
+    protected static function getCompleteUrl(?string $path)
+    {
+        if (is_valid_url($path)) {
+            return $path;
+        }
+        $server = rtrim(config('assets.resource-server'), '/');
+        $path = $server ? ($server . (strpos($path, '/') === 0 ? $path : "/$path")) : Url::to($path);
+
+        return $path;
     }
 
     /**
@@ -135,15 +152,10 @@ class Assets
         }
         static::$init = true;
 
-        $server = rtrim(config('assets.resource-server'), '/');
-
         $paths = (array)config('assets.alias');
 
         foreach ($paths as &$path) {
-            if (is_valid_url($path)) {
-                continue;
-            }
-            $path = $server ? ($server . (strpos($path, '/') === 0 ? $path : "/$path")) : Url::to($path);
+            $path = static::getCompleteUrl($path);
         }
 
         return static::$alias = array_merge($paths, static::$alias);
